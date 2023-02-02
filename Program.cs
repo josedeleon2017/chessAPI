@@ -46,9 +46,15 @@ try
     app.MapPost("player", 
     [AllowAnonymous] async(IPlayerBusiness<int> bs, clsNewPlayer newPlayer) => Results.Ok(await bs.addPlayer(newPlayer)));
 
+    //Tarea
+    app.MapPost("playerById",
+    [AllowAnonymous] async (IPlayerBusiness<int> bs, clsPlayer<int> player) => Results.Ok(await bs.getPlayer(player)));
 
-    app.MapPost("delete",
-    [AllowAnonymous] async (IPlayerBusiness<int> bs, clsPlayer player) => Results.Ok());
+    app.MapGet("getAllPlayers",
+    [AllowAnonymous] async (IPlayerBusiness<int> bs) => Results.Ok(await bs.getAllPlayers()));
+
+    app.MapPut("updatePlayer",
+    [AllowAnonymous] async (IPlayerBusiness<int> bs, clsPlayer<int> player) => Results.Ok(await bs.updatePlayer(player)));
 
     app.Run();
 }

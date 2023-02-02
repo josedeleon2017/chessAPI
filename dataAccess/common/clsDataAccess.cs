@@ -1,5 +1,6 @@
 using System.Data;
 using System.Data.SqlClient;
+using System.Security.Cryptography;
 using chessAPI.dataAccess.interfaces;
 using Dapper;
 
@@ -207,6 +208,7 @@ public abstract class clsDataAccess<TEntity, TKey, TC>
             await set(p, RowVersion, queries.UpdateWholeEntity).ConfigureAwait(false);
         }
 
+
         protected async Task<TResult> set<TResult>(DynamicParameters param, TC? rowVersion, string query, Action<TResult> setFields)
         {
             try
@@ -287,7 +289,49 @@ public abstract class clsDataAccess<TEntity, TKey, TC>
             }
         }
 
-        protected async Task set(DynamicParameters param, TC? rowVersion, string query)
+    protected async Task<bool> update(DynamicParameters param, TC? rowVersion)
+    {
+        try
+        {
+            if (rowVersion.HasValue)
+            {
+                rkm.concurrencyHandler.optimisticConcurrencyColumnAsParam(rowVersion.Value, ref param);
+            }
+            var x = await rkm.trn.Connection.ExecuteAsync(sql: queries.UpdateWholeEntity,
+                                                          param: param,
+                                                          transaction: rkm.trn,
+                                                          commandType: CommandType.Text).ConfigureAwait(false);
+            if (x > 0)
+            {
+                if (cacheddata == true)
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                throw new DBConcurrencyException("Error de concurrencia en la base de datos");
+            }
+            return true;
+        }
+        catch (SqlException ex)
+        {
+            logger.LogError("Error al hacer SQL-SET {" + queries.UpdateWholeEntity + "} Error:" + ex.ToString());
+            throw;
+        }
+        catch (TimeoutException ex)
+        {
+            logger.LogError("Error al hacer SQL-SET (TimeOut) {" + queries.UpdateWholeEntity + "} Error:" + ex.ToString());
+            throw;
+        }
+        catch (Exception ex)
+        {
+            logger.LogError("Error general al hacer SQL-SET {" + queries.UpdateWholeEntity + "} Error:" + ex.ToString());
+            throw;
+        }
+    }
+
+    protected async Task set(DynamicParameters param, TC? rowVersion, string query)
         {
             await set(param, rowVersion, query, null).ConfigureAwait(false);
         }
