@@ -34,9 +34,10 @@ public sealed class clsPlayerRepository<TI, TC> : clsDataAccess<clsPlayerEntityM
         return r;
     }
 
-    public Task deletePlayer(TI id)
+    public async Task deletePlayer(TI id)
     {
-        throw new NotImplementedException();
+        var p = new DynamicParameters();
+        await delete(p).ConfigureAwait(false);
     }
 
     public Task<IEnumerable<clsPlayerEntityModel<TI, TC>>> getPlayersByGame(TI gameId)
