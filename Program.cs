@@ -3,9 +3,11 @@ using Autofac.Extensions.DependencyInjection;
 using chessAPI;
 using chessAPI.business.interfaces;
 using chessAPI.models.player;
+using chessAPI.models.game;
 using Microsoft.AspNetCore.Authorization;
 using Serilog;
 using Serilog.Events;
+using chessAPI.dataAccess.queries.postgreSQL;
 
 //Serilog logger (https://github.com/serilog/serilog-aspnetcore)
 Log.Logger = new LoggerConfiguration()
@@ -43,10 +45,13 @@ try
         return "hola mundo";
     });
 
+    //Repo original
     app.MapPost("player", 
     [AllowAnonymous] async(IPlayerBusiness<int> bs, clsNewPlayer newPlayer) => Results.Ok(await bs.addPlayer(newPlayer)));
 
-    //Tarea
+    //Funcionalidad incremental
+
+    //Player
     app.MapPost("playerById",
     [AllowAnonymous] async (IPlayerBusiness<int> bs, clsPlayer<int> player) => Results.Ok(await bs.getPlayer(player)));
 
@@ -54,7 +59,26 @@ try
     [AllowAnonymous] async (IPlayerBusiness<int> bs) => Results.Ok(await bs.getAllPlayers()));
 
     app.MapPut("updatePlayer",
-    [AllowAnonymous] async (IPlayerBusiness<int> bs, clsPlayer<int> player) => Results.Ok(await bs.updatePlayer(player)));
+    [AllowAnonymous] async (IPlayerBusiness<int> bs, clsPlayer<int> player) => await bs.updatePlayer(player) ? Results.Ok(await bs.updatePlayer(player)) : Results.BadRequest(await bs.updatePlayer(player)));
+
+    //Game
+    app.MapPost("addGame",
+    [AllowAnonymous] async (IGameBusiness<int> bs, clsNewGame game) => Results.Ok(await bs.addGame(game)));
+
+    app.MapPut("updateGame",
+    [AllowAnonymous] async (IGameBusiness<int> bs, clsGame<int> game) => await bs.updateGame(game) ? Results.Ok(await bs.updateGame(game)) : Results.BadRequest(await bs.updateGame(game)));
+
+
+    //app.MapPost("getAllGames",
+    //[AllowAnonymous] async (IGameBusiness<int> bs, clsPlayer<int> player) => Results.Ok(await bs.getPlayer(player)));
+
+    //Repository pattern
+    //app.MapPost("startGame",
+    //[AllowAnonymous] async (IGameBusiness<int> bs, clsPlayer<int> player) => Results.Ok(await bs.getPlayer(player)));
+    //app.MapPut("completeGame",
+    //[AllowAnonymous] async (IGameBusiness<int> bs, clsPlayer<int> player) => Results.Ok(await bs.getPlayer(player)));
+
+
 
     app.Run();
 }

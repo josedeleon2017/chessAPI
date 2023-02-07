@@ -51,7 +51,7 @@ public sealed class clsPlayerRepository<TI, TC> : clsDataAccess<clsPlayerEntityM
         return await getEntity(id);
     }
 
-    public Task<IEnumerable<clsPlayerEntityModel<TI, TC>>> getPlayersByGame(TI gameId)
+    public Task<IEnumerable<clsPlayerEntityModel<TI, TC>>> getPlayersByTeam(TI TeamId)
     {
         throw new NotImplementedException();
     }

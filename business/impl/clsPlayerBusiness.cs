@@ -1,6 +1,7 @@
 using chessAPI.business.interfaces;
 using chessAPI.dataAccess.repositores;
 using chessAPI.models.player;
+using System.Net;
 
 namespace chessAPI.business.impl;
 
@@ -37,7 +38,14 @@ public sealed class clsPlayerBusiness<TI, TC> : IPlayerBusiness<TI>
 
     public async Task<bool> updatePlayer(clsPlayer<TI> player)
     {
-        var x = await playerRepository.updatePlayer(player).ConfigureAwait(false);
-        return x;
+        try
+        {
+            var x = await playerRepository.updatePlayer(player).ConfigureAwait(false);
+            return x;
+        }
+        catch (Exception ex)
+        {
+            return false;
+        }
     }
 }
