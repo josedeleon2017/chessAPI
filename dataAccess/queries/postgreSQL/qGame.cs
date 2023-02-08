@@ -2,8 +2,11 @@ namespace chessAPI.dataAccess.queries.postgreSQL;
 
 public sealed class qGame : IQGame
 {
-    private const string _selectAll = @"";
-    private const string _selectOne = @"";
+    private const string _selectAll = @"SELECT id, started, whites, blacks, turn, winner 
+    FROM public.game";
+    private const string _selectOne = @"SELECT id, started, whites, blacks, turn, winner 
+    FROM public.game
+    WHERE id=@ID";
     private const string _add = @"
     INSERT INTO public.game(started, whites, blacks, turn, winner)
 	VALUES (@STARTED, @WHITES, @BLACKS, @TURN, @WINNER) RETURNING id";

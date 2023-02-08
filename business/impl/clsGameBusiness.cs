@@ -1,6 +1,8 @@
 ﻿using chessAPI.business.interfaces;
+using chessAPI.dataAccess.queries.postgreSQL;
 using chessAPI.dataAccess.repositores;
 using chessAPI.models.game;
+using chessAPI.models.player;
 
 namespace chessAPI.business.impl;
 
@@ -26,19 +28,25 @@ where TC : struct
         throw new NotImplementedException();
     }
 
-    public Task<IEnumerable<clsGame<TI>>> getAllGames()
+    public async Task<IEnumerable<clsGame<TI>>> getAllGames()
     {
-        throw new NotImplementedException();
+        var x = await gameRepository.getAllGames().ConfigureAwait(false);
+        var games = new List<clsGame<TI>>();
+        x.ToList().ForEach(x => games.Add(new clsGame<TI>(x.id, x.started, x.whites, x.blacks, x.turn, x.winner)));
+        return games;
     }
 
-    public Task<clsGame<TI>> getGame(clsGame<TI> game)
+    public async Task<clsGame<TI>> getGame(clsGame<TI> game)
     {
-        throw new NotImplementedException();
+        var x = await gameRepository.getGame(game.id).ConfigureAwait(false);
+        return new clsGame<TI>(x.id, x.started, x.whites, x.blacks, x.turn, x.winner);
     }
 
-    public Task<clsGame<TI>> startGame(clsNewGame newGame)
+    public async Task<clsGame<TI>> startGame(clsNewGame newGame)
     {
-        throw new NotImplementedException();
+        newGame.started = DateTime.Now;
+        var x = await gameRepository.startGame(newGame).ConfigureAwait(false);
+        return new clsGame<TI>(x, newGame.started, newGame.whites, newGame.blacks, newGame.turn, newGame.winner);
     }
 
     public async Task<bool> updateGame(clsGame<TI> game)
@@ -48,7 +56,7 @@ where TC : struct
             var x = await gameRepository.updateGame(game).ConfigureAwait(false);
             return x;
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             return false;
         }

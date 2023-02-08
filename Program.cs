@@ -68,16 +68,20 @@ try
     app.MapPut("updateGame",
     [AllowAnonymous] async (IGameBusiness<int> bs, clsGame<int> game) => await bs.updateGame(game) ? Results.Ok(await bs.updateGame(game)) : Results.BadRequest(await bs.updateGame(game)));
 
+    app.MapGet("getAllGames",
+    [AllowAnonymous] async (IGameBusiness<int> bs) => Results.Ok(await bs.getAllGames()));
 
-    //app.MapPost("getAllGames",
-    //[AllowAnonymous] async (IGameBusiness<int> bs, clsPlayer<int> player) => Results.Ok(await bs.getPlayer(player)));
+    app.MapPost("gameById",
+    [AllowAnonymous] async (IGameBusiness<int> bs, clsGame<int> game) => Results.Ok(await bs.getGame(game)));
 
     //Repository pattern
-    //app.MapPost("startGame",
-    //[AllowAnonymous] async (IGameBusiness<int> bs, clsPlayer<int> player) => Results.Ok(await bs.getPlayer(player)));
+    //que reciba mejor team y haga toda la lógica, puede que haga falta inyectar repositoryTeam a Game
+    // mandar id como obj team y traer el team si existe, luego insertar a game
+    app.MapPost("startGame",
+    [AllowAnonymous] async (IGameBusiness<int> bs, clsNewGame game) => Results.Ok(await bs.startGame(game)));
+
     //app.MapPut("completeGame",
     //[AllowAnonymous] async (IGameBusiness<int> bs, clsPlayer<int> player) => Results.Ok(await bs.getPlayer(player)));
-
 
 
     app.Run();

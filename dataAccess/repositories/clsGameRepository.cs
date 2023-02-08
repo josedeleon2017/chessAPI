@@ -33,14 +33,28 @@ public sealed class clsGameRepository<TI, TC> : clsDataAccess<clsGameEntityModel
         throw new NotImplementedException();
     }
 
-    public Task<IEnumerable<clsGameEntityModel<TI, TC>>> getAllGames()
+    public async Task<IEnumerable<clsGameEntityModel<TI, TC>>> getAllGames()
     {
-        throw new NotImplementedException();
+        var p = new DynamicParameters();
+        return await getALL(p).ConfigureAwait(false);
     }
 
-    public Task<clsGameEntityModel<TI, TC>> getGame(TI id)
+    public async Task<clsGameEntityModel<TI, TC>> getGame(TI id)
     {
-        throw new NotImplementedException();
+        return await getEntity(id);
+    }
+
+    public async Task<TI> startGame(clsNewGame game)
+    {
+        var p = new DynamicParameters();
+        p.Add("STARTED", game.started);
+        p.Add("WHITES", game.whites);
+        p.Add("BLACKS", null);
+        p.Add("TURN", null);
+        p.Add("WINNER", null);
+
+        //existTeam
+        return await add<TI>(p).ConfigureAwait(false);
     }
 
     public async Task<bool> updateGame(clsGame<TI> updatedGame)

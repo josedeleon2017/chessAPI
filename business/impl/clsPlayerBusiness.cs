@@ -43,7 +43,7 @@ public sealed class clsPlayerBusiness<TI, TC> : IPlayerBusiness<TI>
             var x = await playerRepository.updatePlayer(player).ConfigureAwait(false);
             return x;
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             return false;
         }
